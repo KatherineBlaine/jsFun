@@ -20,26 +20,38 @@ const { dinosaurs, humans, movies } = require('./datasets/dinosaurs');
 
 // DATASET: kitties from ./datasets/kitties
 const kittyPrompts = {
-  orangePetNames() {
+  orangePetNames(array) {
     // Return an array of just the names of kitties who are orange e.g.
         // ['Tiger', 'Snickers']
 
-        /* CODE GOES HERE */
+        let array1 = array.filter(element => element.color === 'orange');
+        return array1.map(element => element.name);
+
 
     // Annotation:
-    // Write your annotation here as a comment
+    // To reach the desired output, I created a variable that holds a filtered version of the original kittyPrompts array, holding only the objects in which the color property is equal to orange.
+    // Then, I needed to create an array of just the values of the name properties of this filtered array. I returned a map that iterates through the filtered array and creates a new array holding just the name of each element.
   },
 
-  sortByAge() {
+  sortByAge(array) {
     // Sort the kitties by their age
 
-    /* CODE GOES HERE */
+    return array.sort((elementA, elementB) => {
+      if (elementA.age > elementB.age) {
+        return -1;
+      } else if (elementA.age < elementB.age) {
+        return 1;
+      } else {
+        return 0;
+      }
+    })
+  
 
     // Annotation:
-    // Write your annotation here as a comment
+    // The sort iterator takes 2 arguments that signify the elements that it will be comparing when it is sorting the objects in an array. A return value of 0 indicated that the interpreter should leave the two elements in the same position relative to the other. A return value of >0 tells the interpreter that element a should come after element b. A return value of <0 tells the interpreter that element a should come before element b.
   },
 
-  growUp() {
+  growUp(array) {
     // Return an array of kitties who have all grown up by 2 years e.g.
     // [{
     //   name: 'Felicia',
@@ -53,8 +65,13 @@ const kittyPrompts = {
     // },
     // ...etc]
 
-    /* CODE GOES HERE */
+    return array.map(element => {
+      element.age += 2
+      return element;
+    
+    })
   }
+  // Used a map method to create a new array that first updates the value of the age property for each array element, then returns the entire object with the updated age value.
 };
 
 // PLEASE READ-----------------------
@@ -77,7 +94,7 @@ const kittyPrompts = {
 
 // DATASET: clubs from ./datasets/clubs
 const clubPrompts = {
-  membersBelongingToClubs() {
+  membersBelongingToClubs(array) {
     // Your function should access the clubs data through a parameter (it is being passed as an argument in the test file)
     // Create an object whose keys are the names of people, and whose values are
     // arrays that include the names of the clubs that person is a part of. e.g.
@@ -87,7 +104,24 @@ const clubPrompts = {
     //   ...etc
     // }
 
-    /* CODE GOES HERE */
+    // I want to look through each array element and probably use the reduce to create a single object.
+    // I want my initial value to be an empty object.
+    // I want my object to have a key for each name
+    // I want the value of each key to be the clubs they belong to - the clubs.club value in the object in which their name is a value of the clubs.members array.
+    // I think I am going to want to iterate through the members array of each of the clubs elements also.
+    // if clubs.element.members.includes(name/key), clubs.
+    // I want to create an array of members?
+    // How many differen names do I have?
+
+  
+   array.reduce((accumulator, currentValue) => {accumulator[currentValue.members] = 'Drama'
+    }, {})
+
+  
+
+    // // output: clubs {
+    //        clubs.members[i]
+    // }
 
     // Annotation:
     // Write your annotation here as a comment
@@ -357,10 +391,30 @@ const weatherPrompts = {
     // return an array of all the average temperatures. Eg:
     // [ 40, 40, 44.5, 43.5, 57, 35, 65.5, 62, 14, 46.5 ]
 
-    /* CODE GOES HERE */
+    // iterate through an array of objects
+    // for wach we will calculate average between high and low
+    // create a new array with these averages
+    // starting array and ending array will be the same lenght
+    // Map? forEach? reduce?
+    // step one - do we need a param?
+    // no parameter - because there is no argument in the 
+    // step two- are the files correctly connected?
+    // console.log the data we are looking for to check.
+
+    // console.log(weather); - why didn't this work? * has to be unskipped.
+    // and make sure any other tests before that may fail are skipped.
+
+    const averageTemps = weather.map((location) => {
+      const high = location.temperature.high;
+      const low = location.temperature.low;
+      const avg = (high + low) / 2;
+      return avg;
+    })
+
+    return averageTemps;
 
     // Annotation:
-    // Write your annotation here as a comment
+    // order of operations for avg calculation!
   },
 
   findSunnySpots() {
@@ -370,10 +424,26 @@ const weatherPrompts = {
     // 'New Orleans, Louisiana is sunny.',
     // 'Raleigh, North Carolina is mostly sunny.' ]
 
-    /* CODE GOES HERE */
+    // return value = array of strings
+    // only want our new array to hold strings that correspond with the values of the original array that have a type property of sunny or mostly sunny
+    // how to access the data we want to evaluate: currentElement.type 
+    // What method?
+    // we only want certain values considered, so we cant use map
+    // filter seems like the best option
+    // we want strings that consider atlanta, louisiana, and NC.
+
+    const sunnySpots = weather.filter(location => 
+      location.type === 'sunny' || location.type === 'mostly sunny').map(location => 
+      {return `${location.location} is ${location.type}.`})
+
+    // sunnySpots.map(location => 
+    // {return `${location.location} is ${location.type}.`})
+    // return sunnySpotsStrings;
+
+    return sunnySpots;
 
     // Annotation:
-    // Write your annotation here as a comment
+    // QUESTION: is it better to chain them or put them in separate lines?
   },
 
   findHighestHumidity() {
@@ -384,6 +454,16 @@ const weatherPrompts = {
     //   humidity: 84,
     //   temperature: { high: 49, low: 38 }
     // }
+
+    // We want to return ONE single object within the weather array.
+    // We want it to be the object within the weather array whose value for humidity is the highest out of all the objects. We want to compare all of the elements' values for humidity, and find the highest value.
+    // I don't think that find would work because it will return the first value that meets the condition and then end the execution.
+    // We could sort the data into lowest to highest humidity values
+    // after doing this, we could return the last value in the new array.
+    // we would use sort method to sort the data
+    // what method could we use to only return the last element?
+    // Maybe we could use reduce? 
+    // We could make the accumulator 
 
     /* CODE GOES HERE */
 
@@ -475,10 +555,11 @@ const breweryPrompts = {
     // Return the total beer count of all beers for every brewery e.g.
     // 40
 
-    /* CODE GOES HERE */
+    // reduce method with an initial value
 
-    // Annotation:
-    // Write your annotation here as a comment
+    return breweries.reduce((accumulator, brewery) => {
+      return accumulator + brewery.beers.length}, 0)
+
   },
 
   getBreweryBeerCount() {
@@ -489,6 +570,8 @@ const breweryPrompts = {
     //  { name: 'Ratio Beerworks', beerCount: 5},
     // ...etc.
     // ]
+
+    // we want to create a new array of objects that hold 
 
     /* CODE GOES HERE */
 
