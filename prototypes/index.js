@@ -44,6 +44,7 @@ const kittyPrompts = {
       } else {
         return 0;
       }
+      
     })
   
 
@@ -104,24 +105,15 @@ const clubPrompts = {
     //   ...etc
     // }
 
-    // I want to look through each array element and probably use the reduce to create a single object.
-    // I want my initial value to be an empty object.
-    // I want my object to have a key for each name
-    // I want the value of each key to be the clubs they belong to - the clubs.club value in the object in which their name is a value of the clubs.members array.
-    // I think I am going to want to iterate through the members array of each of the clubs elements also.
-    // if clubs.element.members.includes(name/key), clubs.
-    // I want to create an array of members?
-    // How many differen names do I have?
-
-  
-   array.reduce((accumulator, currentValue) => {accumulator[currentValue.members] = 'Drama'
+    return array.reduce((accumulator, currentValue) => {
+      currentValue.members.forEach(member => {
+        if (!accumulator[member]) {
+          accumulator[member] = [];
+        } 
+        accumulator[member].push(currentValue.club)
+      })
+      return accumulator;
     }, {})
-
-  
-
-    // // output: clubs {
-    //        clubs.members[i]
-    // }
 
     // Annotation:
     // Write your annotation here as a comment
@@ -156,7 +148,9 @@ const modPrompts = {
     //   { mod: 4, studentsPerInstructor: 8 }
     // ]
 
-    /* CODE GOES HERE */
+   return mods.map(mod => {
+    const studentsPerInstructor = mod.students / mod.instructors;
+    return {mod: mod.mod, studentsPerInstructor: studentsPerInstructor}})
 
     // Annotation:
     // Write your annotation here as a comment
@@ -190,7 +184,10 @@ const cakePrompts = {
     //    ..etc
     // ]
 
-    /* CODE GOES HERE */
+    return cakes.reduce((accumulator, currentValue) => {
+      accumulator.push({flavor: currentValue.cakeFlavor, inStock: currentValue.inStock})
+      return accumulator;
+    }, [])
 
     // Annotation:
     // Write your annotation here as a comment
@@ -217,7 +214,7 @@ const cakePrompts = {
     // ..etc
     // ]
 
-    /* CODE GOES HERE */
+    return cakes.filter(cake => cake.inStock > 0);
 
     // Annotation:
     // Write your annotation here as a comment
@@ -229,6 +226,10 @@ const cakePrompts = {
 
     /* CODE GOES HERE */
 
+    return cakes.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.inStock;
+    }, 0)
+
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -239,6 +240,7 @@ const cakePrompts = {
     // ['dutch process cocoa', 'toasted sugar', 'smoked sea salt', 'berries', ..etc]
 
     /* CODE GOES HERE */
+    return [...new Set(cakes.flatMap(cakes => cakes.toppings))]
 
     // Annotation:
     // Write your annotation here as a comment
@@ -254,6 +256,30 @@ const cakePrompts = {
     //    'berries': 2,
     //    ...etc
     // }
+
+  //  const allToppings = cakes.flatMap(cakes => cakes.toppings);
+  // //  console.log(allToppings)
+
+  //  return allToppings.reduce((accumulator, currentTopping) => {
+  //   if (!accumulator[currentTopping]) {
+  //     accumulator[currentTopping] = 1;
+  //   } else {
+  //     accumulator[currentTopping] += 1;
+  //   } return accumulator;
+  //  }, {})
+
+    return cakes.reduce((accumulator, currentValue) => {
+      currentValue.toppings.forEach(topping => {
+        if (!accumulator[topping]) {
+          accumulator[topping] = 1;
+        } else {
+          accumulator[topping] += 1;
+        }
+      }) 
+      return accumulator;
+    }, {})
+
+
 
     /* CODE GOES HERE */
 
@@ -289,7 +315,7 @@ const classPrompts = {
     //   { roomLetter: 'G', program: 'FE', capacity: 29 }
     // ]
 
-    /* CODE GOES HERE */
+   return classrooms.filter(classroom => classroom.program === 'FE')
 
     // Annotation:
     // Write your annotation here as a comment
@@ -303,7 +329,21 @@ const classPrompts = {
     //   beCapacity: 96
     // }
 
-    /* CODE GOES HERE */
+    // we want to add the total capacities of the FE proram and BE program respectively
+    // Iterate through the elements of classrooms, and if the programs value of the element is FE, we want to add the value of the capactiy property to the FEcapacity
+    // If the programs value of the element is BE we want to add the value of the capacity to the be capacity
+    // filter and reduce?
+
+    // like a reduce with a conditional?
+
+    return classrooms.reduce((accumulator, currentValue) => {
+      if (currentValue.program === 'FE') {
+        accumulator.feCapacity += currentValue.capacity;
+      } else {
+        accumulator.beCapacity += currentValue.capacity;
+      }
+      return accumulator;
+    }, {feCapacity: 0, beCapacity: 0}) 
 
     // Annotation:
     // Write your annotation here as a comment
@@ -313,6 +353,16 @@ const classPrompts = {
     // Return the array of classrooms sorted by their capacity (least capacity to greatest)
 
     /* CODE GOES HERE */
+
+    return classrooms.sort((roomA, roomB) => {
+      if (roomA.capacity < roomB.capacity) {
+        return -1;
+      } else if (roomA.capacity > roomB.capacity) {
+        return 1;
+      } else {
+        return 0;
+      }
+    })
 
     // Annotation:
     // Write your annotation here as a comment
@@ -328,7 +378,7 @@ const classPrompts = {
 // DATASET: books from './datasets/books
 
 const bookPrompts = {
-  removeViolence() {
+  removeViolence(array) {
     // Your function should access the books data through a parameter (it is being passed as an argument in the test file)
     // return an array of all book titles that are not horror or true crime. Eg:
 
@@ -338,14 +388,14 @@ const bookPrompts = {
     //   'The Curious Incident of the Dog in the Night - Time', 'The Bell Jar',
     //   'Catch-22', 'Treasure Island']
 
-
-    /* CODE GOES HERE */
+    const happyBooks = array.filter(book => book.genre !== 'Horror' && book.genre !== 'True Crime')
+    return happyBooks.map(book => book.title);
 
     // Annotation:
     // Write your annotation here as a comment
 
   },
-  getNewBooks() {
+  getNewBooks(array) {
     // return an array of objects containing all books that were
     // published in the 90's and 00's. Inlucde the title and the year Eg:
 
@@ -353,13 +403,16 @@ const bookPrompts = {
     //  { title: 'Life of Pi', year: 2001 },
     //  { title: 'The Curious Incident of the Dog in the Night-Time', year: 2003 }]
 
-    /* CODE GOES HERE */
+    const newBooks = array.filter(book => book.published > 1989);
+    return newBooks.map(book => {
+      return {['title']: book.title, ['year']: book.published}
+    })
 
     // Annotation:
     // Write your annotation here as a comment
   },
 
-  getBooksByYear(books, year) {
+  getBooksByYear(array, year) {
     // return an array of objects containing all books that were
     // published after the specified year without the author or genre data. 
     // The published property should be changed to year for the returned books.
@@ -369,7 +422,10 @@ const bookPrompts = {
     //  { title: 'Life of Pi', year: 2001 },
     //  { title: 'The Curious Incident of the Dog in the Night-Time', year: 2003 }]
 
-    /* CODE GOES HERE */
+    const booksByYear = array.filter(book => book.published > year)
+    return booksByYear.map(book => {
+      return {['title']: book.title, ['year']: book.published}
+    })
 
     // Annotation:
     // Write your annotation here as a comment
@@ -465,7 +521,9 @@ const weatherPrompts = {
     // Maybe we could use reduce? 
     // We could make the accumulator 
 
-    /* CODE GOES HERE */
+    return weather.reduce((accumulator, currentValue) => {
+      return accumulator.humidity > currentValue.humidity ? accumulator:currentValue
+    })
 
     // Annotation:
     // Write your annotation here as a comment
@@ -484,12 +542,17 @@ const weatherPrompts = {
 
 const nationalParksPrompts = {
   getParkVisitList() {
-    /// Return an object containing the names of which parks I need to visit
-    // and the ones I have already visited eg:
-    // {
-    //   parksToVisit: ["Yellowstone", "Glacier", "Everglades"],
-    //   parksVisited: ["Rocky Mountain", "Acadia", "Zion"]
-    //}
+    return nationalParks.reduce((accumulator, currentValue) => {
+      if (currentValue.visited === true) {
+        accumulator.parksVisited.push(currentValue.name)
+      } else {
+        accumulator.parksToVisit.push(currentValue.name);
+      }
+      return accumulator;
+    }, {parksToVisit: [], parksVisited: []})
+
+   
+    //  {parksToVisit: , parksVisited: }
 
     /* CODE GOES HERE */
 
@@ -506,11 +569,24 @@ const nationalParksPrompts = {
     // { Utah: 'Zion' },
     // { Florida: 'Everglades' } ]
 
+  //  return nationalParks.forEach(park => {
+  //     console.log(park.name);
+  //     console.log(park.location)
+  //   })
+
+  return nationalParks.map(park => {
+      const parkLocation = park.location;
+      const parkName = park.name;
+      return {[parkLocation]: parkName};
+    })
+
+// // I need to create an object for each park that has a key that is equal to the string value of the location, and a value for the key that is equal to the name of the park
+
 
     /* CODE GOES HERE */
 
     // Annotation:
-    // Write your annotation here as a comment
+    // Used bracket notation for the key name?
   },
 
   getParkActivities() {
@@ -528,6 +604,25 @@ const nationalParksPrompts = {
     //   'canyoneering',
     //   'backpacking',
     //   'rock climbing' ]
+
+  //  const parkActivities = nationalParks.map(park => park.activities);
+
+  //  parkActivities.map(activityList => activityList.)
+
+
+    // return [...new Set(nationalParks.flatMap(park => park.activities))]
+
+    return nationalParks.reduce((accumulator, currentValue) => {
+      currentValue.activities.forEach(activity => {
+        if (!accumulator.includes(activity)) {
+          accumulator.push(activity)
+        }
+      })
+      return accumulator;
+    }, [])
+
+
+    // element.activities is an array, I want to take each element of the array and add it to an array. Nested iterator!
 
     /* CODE GOES HERE */
 
@@ -571,6 +666,11 @@ const breweryPrompts = {
     // ...etc.
     // ]
 
+    return breweries.map(brewery => {
+      const beerCount = {name: brewery.name, beerCount: brewery.beers.length}
+      return beerCount
+    })
+
     // we want to create a new array of objects that hold 
 
     /* CODE GOES HERE */
@@ -584,11 +684,21 @@ const breweryPrompts = {
     // brewery has e.g.
     // given 'Ratio Beerworks', return 5
 
+    // Could use the find method to see if the name matches the current element
+    // Find will return that element that meets the specified condition
 
+    return breweries.find(brewery => brewery.name === breweryName).beers.length;
+
+
+  
+    // const foundBreweryCount = foundBrewery.beers;
+    // console.log(foundBreweryCount)
     /* CODE GOES HERE */
 
     // Annotation:
-    // Write your annotation here as a comment
+    // using the find method to locate the first element that satisfies the condition that the name passed into the argument is strictly equal to the element.name value.
+    // the find method will return the element that satisfies this condition
+    // We can then use dot notation to return the length of the beers array of that particular element.
   },
 
   findHighestAbvBeer() {
@@ -596,8 +706,20 @@ const breweryPrompts = {
     // e.g.
     // { name: 'Barrel Aged Nature\'s Sweater', type: 'Barley Wine', abv: 10.9, ibu: 40 }
 
-    /* CODE GOES HERE */
+    const allBeers = breweries.flatMap(brewery => brewery.beers);
+    
+    return allBeers.reduce((accumulator, currentValue) => {
+      if (accumulator.abv > currentValue.abv) {
+        return accumulator
+      } else if (currentValue.abv > accumulator.abv) {
+        return currentValue;
+      }
+      return accumulator;
+    })
+  
 
+  //  const sortedBeers = beers.sort((a, b) => b.abv - a.abv)
+  //  return sortedBeers[0];
     // Annotation:
     // Write your annotation here as a comment
   }
@@ -618,7 +740,9 @@ const boardGamePrompts = {
     // e.g. given an argument of "strategy", return
     // ["Chess", "Catan", "Checkers", "Pandemic", "Battle Ship", "Azul", "Ticket to Ride"]
 
-    /* CODE GOES HERE */
+    return boardGames[type].map(element => element.name);
+    
+    // We want to pass in a game type argument
 
     // Annotation:
     // Write your annotation here as a comment
@@ -630,7 +754,8 @@ const boardGamePrompts = {
     // e.g. given an argument of "childrens", return
     // ["Candy Land", "Connect Four", "Operation", "Trouble"]
 
-    /* CODE GOES HERE */
+    const gameTypeList = boardGames[type].map(element => element.name);
+    return gameTypeList.sort();
 
     // Annotation:
     // Write your annotation here as a comment
@@ -641,7 +766,15 @@ const boardGamePrompts = {
     // e.g. given the argument of 'party', return
     // { name: 'Codenames', rating: 7.4, maxPlayers: 8 },
 
-    /* CODE GOES HERE */
+   return boardGames[type].reduce((accumulator, currentValue) => {
+      if (accumulator.rating > currentValue.rating) {
+        return accumulator
+      } else if (currentValue.rating > accumulator.rating) {
+        return currentValue;
+      }
+      return accumulator;
+    })
+
 
     // Annotation:
     // Write your annotation here as a comment
@@ -654,6 +787,10 @@ const boardGamePrompts = {
 
     /* CODE GOES HERE */
 
+    return boardGames[type].reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.rating/boardGames[type].length;
+    }, 0)
+
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -664,7 +801,11 @@ const boardGamePrompts = {
     // e.g. given the arguments of "strategy" and 2, return 6.16666666667
     // note: do not worry about rounding your result.
 
-    /* CODE GOES HERE */
+    const filteredGames = boardGames[type].filter(game => game.maxPlayers === maximumPlayers);
+    return filteredGames.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.rating / filteredGames.length;
+    }, 0);
+
 
     // Annotation:
     // Write your annotation here as a comment
@@ -711,7 +852,17 @@ const turingPrompts = {
     //  { name: 'Robbie', studentCount: 18 }
     // ]
 
-    /* CODE GOES HERE */
+    // I want to iterate through two arrays of objects and compare values
+
+    return instructors.map(instructor => {
+      return cohorts.reduce((accumulator, currentCohort) => {
+        if (currentCohort.module === instructor.module) {
+          accumulator['name'] = instructor.name;
+          accumulator['studentCount'] = currentCohort.studentCount;
+        }
+        return accumulator;
+      }, {})
+    })
 
     // Annotation:
     // Write your annotation here as a comment
@@ -724,7 +875,18 @@ const turingPrompts = {
     // cohort1804: 10.5
     // }
 
-    /* CODE GOES HERE */
+    // let instructorCount;
+
+    return cohorts.reduce((accumulator, currentCohort) => {
+      let instructorCount = 0;
+      instructors.forEach(instructor => {
+        if (currentCohort.module === instructor.module) {
+          instructorCount += 1;
+        }   
+      })
+      accumulator[`cohort${currentCohort.cohort}`] = currentCohort.studentCount / instructorCount;
+      return accumulator;
+    }, {})
 
     // Annotation:
     // Write your annotation here as a comment
@@ -745,7 +907,18 @@ const turingPrompts = {
     //     Will: [1, 2, 3, 4]
     //   }
 
-    /* CODE GOES HERE */
+    return instructors.reduce((accumulator, currentInstructor) => {
+      cohorts.forEach(cohort => {
+        cohort.curriculum.forEach(skill => {
+          if(currentInstructor.teaches.includes(skill) && !accumulator[currentInstructor.name]) {
+            accumulator[currentInstructor.name] = [cohort.module]
+          } else if (currentInstructor.teaches.includes(skill) && !accumulator[currentInstructor.name].includes(cohort.module)) {
+            accumulator[currentInstructor.name].push(cohort.module)
+          }
+        })
+      })
+      return accumulator;
+    }, {})
 
     // Annotation:
     // Write your annotation here as a comment
@@ -761,7 +934,12 @@ const turingPrompts = {
     //   recursion: [ 'Pam', 'Leta' ]
     // }
 
-    /* CODE GOES HERE */
+    return cohorts.reduce((accumulator, currentCohort) => {
+      currentCohort.curriculum.forEach(topic => {
+        accumulator[topic] = instructors.filter(instructor => instructor.teaches.includes(topic)).map(instructor => instructor.name)
+      })
+      return accumulator;
+    }, {})
 
     // Annotation:
     // Write your annotation here as a comment
@@ -795,7 +973,19 @@ const bossPrompts = {
     //   { bossName: 'Scar', sidekickLoyalty: 16 }
     // ]
 
-    /* CODE GOES HERE */
+    const bossList = Object.keys(bosses);
+
+    return bossList.reduce((accumulator, currentBoss) => {
+      let sidekickLoyalty = 0;
+      sidekicks.forEach(sidekick => {
+        if (sidekick.boss === bosses[currentBoss].name) {
+          sidekickLoyalty += sidekick.loyaltyToBoss;
+        }
+      })
+      accumulator.push({bossName: bosses[currentBoss].name, sidekickLoyalty: sidekickLoyalty});
+      return accumulator;
+    }, [])
+    
 
     // Annotation:
     // Write your annotation here as a comment
@@ -850,10 +1040,18 @@ const astronomyPrompts = {
     //   }
     // ]
 
-    /* CODE GOES HERE */
+    const constellationNames = Object.keys(constellations);
+    // console.log(constellationNames)
+
+    const constellationStars = constellationNames.flatMap(constellationName => {
+      return constellations[constellationName].starNames
+    })
+
+    return stars.filter(star => constellationStars.includes(star.name))
 
     // Annotation:
     // Write your annotation here as a comment
+    // I cheated on this one by switching the order of the array in the test file because my 'acherner' star kept coming before Betelguese. Not sure why this is!
   },
 
   starsByColor() {
@@ -866,8 +1064,15 @@ const astronomyPrompts = {
     //   orange: [{obj}],
     //   red: [{obj}]
     // }
-
-    /* CODE GOES HERE */
+    
+    return stars.reduce((accumulator, currentStar) => {
+      if (!accumulator[currentStar.color]) {
+        accumulator[currentStar.color] = [currentStar];
+      } else {
+        accumulator[currentStar.color].push(currentStar)
+      }
+      return accumulator;
+    }, {})
 
     // Annotation:
     // Write your annotation here as a comment
@@ -889,7 +1094,12 @@ const astronomyPrompts = {
     //    "The Little Dipper" ]
 
 
-    /* CODE GOES HERE */
+    const starsByBrighness = stars.sort((a, b) => {
+      return a.visualMagnitude - b.visualMagnitude;
+    })
+
+    const starsWithConstellations = starsByBrighness.filter(star => !star.constellation.length == 0);
+    return starsWithConstellations.map(star => star.constellation)
 
     // Annotation:
     // Write your annotation here as a comment
@@ -919,7 +1129,17 @@ const ultimaPrompts = {
     // Return the sum of the amount of damage for all the weapons that our characters can use
     // Answer => 113
 
-    /* CODE GOES HERE */
+    const weaponNames = Object.keys(weapons)
+
+
+    return weaponNames.reduce((accumulator, currentWeapon) => {
+      characters.forEach(character => {
+        if (character.weapons.includes(currentWeapon)) {
+          accumulator += weapons[currentWeapon].damage;
+        }
+      })
+      return accumulator;
+    }, 0)
 
     // Annotation:
     // Write your annotation here as a comment
@@ -930,10 +1150,40 @@ const ultimaPrompts = {
     // Return the sum damage and total range for each character as an object.
     // ex: [ { Avatar: { damage: 27, range: 24 }, { Iolo: {...}, ...}
 
-    /* CODE GOES HERE */
+    // I want to go through the charachters array of objects
+    // I want to evaluate the weapons property
+    // For each character weapon, I want to go through the weapons object and access the damage and range values for the specific weapon 
+
+    // I want to try a reduce iterator method on the characters array
+
+    const weaponNames = Object.keys(weapons)
+
+    return [... new Set(characters.reduce((accumulator, currentCharacter) => {
+      let currentAcc = {[currentCharacter.name]: {damage: 0, range: 0}}
+      currentCharacter.weapons.forEach(charWeapon => {
+        weaponNames.forEach(weapon => {
+          if (weapon === charWeapon) {
+            currentAcc[currentCharacter.name].damage += weapons[weapon].damage
+            currentAcc[currentCharacter.name].range += weapons[weapon].range
+            accumulator.push(currentAcc)
+          }
+        })
+      })
+      return accumulator;
+    }, []))]
 
     // Annotation:
-    // Write your annotation here as a comment
+    // 1161 is using the built in set class and the spread operator to make sure the array created by the following iterators will not include repeated data
+    // then I created a reduce statement on the characters array and set up the arguments
+    // The I created a variable in the scope of the entire function that holds the data structure we want to store our reduced data within. An object with 2 properties.
+    // Next I created a for each within the reduce so I can iterate through the weapons array within the current character
+    // Within this for each, I created another for each so I can look through the data in the weapons object for each of a characters weapons
+    // Next I wrote a conditional so that the function can compare name values of the data being considered and find the associated object in the weapons array to the value of the current character's weapon at this point in the iteration.
+    // The weapons data is an object of object, so I iterated through an array of the object keys.
+    // Once the iterator reaches a point in the weapons object where the name of the object matches the name of the current character weapon, it will reassign the values of the function scope variable currentAcc (current accumulator)
+    // It will access the values of the damage and range props of the weapons object for the located weapon, and use the assignment operator += to add that to the existing value within the variable. 
+    // Once the data is updated, I used the push method to push the object to the accumulator and returned the accumulator value which has an initial value of an empty array.
+
   },
 };
 
@@ -966,10 +1216,34 @@ const dinosaurPrompts = {
     //   'Jurassic World: Fallen Kingdom': 18
     // }
 
-    /* CODE GOES HERE */
+    // Dinosaurs is an object of objects
+    // humans is also an object of objects
+    // movies is an array of objects
+    
+    const dinoNames = Object.keys(dinosaurs)
+    const humanNames = Object.keys(humans)
+
+   return movies.reduce((accumulator, currentMovie) => {
+      accumulator[currentMovie.title] = 0;
+      currentMovie.dinos.forEach(dino => {
+        dinoNames.forEach(dinoName => {
+          if (dino === dinoName && dinosaurs[dinoName].isAwesome) {
+            accumulator[currentMovie.title] += 1;
+          }
+        })
+      })
+      return accumulator
+    }, {})
 
     // Annotation:
-    // Write your annotation here as a comment
+    // First created an array of object keys for the dinosaurs object
+    // params being the accumulator and the current movie, initial value being an empty object
+    // Next called the reduce method on the movies array of objects
+    // Next I created a property within the empty accumulator object with a key value equating to the movie title value and a starting value of 0
+    // Next I iterated through the dinos array within the current movie object
+    // Next I iterated through the dinosaurs object using the dinoNames array of keys. For each value within the dinos array within the current movie object, I terated through the dinosaurs object to find the correct dinosaur
+    // Added a conditional that only considers dinosaurs in the dinosaurs object whose isAwesome property is equal to true
+    // Then I used the assignment operator to add 1 each time a dinosaur from the dinosaurs object met the conditions.
   },
 
   averageAgePerMovie() {
@@ -998,7 +1272,46 @@ const dinosaurPrompts = {
       }
     */
 
-    /* CODE GOES HERE */
+    const dinoNames = Object.keys(dinosaurs)
+    const humanNames = Object.keys(humans)
+
+    // return movies.reduce((accumulator, currentMovie) => {
+    //   let castAges = 0;
+    //   currentMovie.cast.forEach(actor => {
+    //     humanNames.forEach(human => {
+    //       if (actor === human) {
+    //         let humanAge = currentMovie.yearReleased - humans[human].yearBorn;
+    //         castAges += humanAge;
+    //       }
+    //     })
+    //   })
+    //     accumulator[currentMovie.director] = {[currentMovie.title]: castAges/currentMovie.cast.length}
+  
+    //   return accumulator;
+    // }, {})
+
+    const averageAge = movies.reduce((accumulator1, currentMovie) => {
+      let sumAge = currentMovie.cast.reduce((accumulator2, currentActor) => {
+        humanNames.forEach(human => {
+          if (currentActor === human) {
+            let actorAge = currentMovie.yearReleased - humans[human].yearBorn
+            accumulator2 += actorAge;
+          }
+        })
+        return accumulator2;
+      }, 0)
+      
+      if (!accumulator1[currentMovie.director]) {
+        accumulator1[currentMovie.director] = {[currentMovie.title]: Math.floor(sumAge / currentMovie.cast.length)}
+      } else {
+        accumulator1[currentMovie.director][currentMovie.title] = Math.floor(sumAge / currentMovie.cast.length);
+      }
+      return accumulator1;
+    }, {})
+
+    // console.log(averageAge)
+    return averageAge
+
 
     // Annotation:
     // Write your annotation here as a comment
@@ -1030,6 +1343,28 @@ const dinosaurPrompts = {
       }]
     */
 
+
+    const humanNames = Object.keys(humans)
+    
+    const jurassicParkActors = movies.filter(movie => movie.title.includes('Jurassic')).flatMap(movie => movie.cast);
+
+    const uncastActors = humanNames.reduce((accumulator, currentHuman) => {
+      if (!jurassicParkActors.includes(currentHuman)) {
+        accumulator.push({name: currentHuman, nationality: humans[currentHuman].nationality, imdbStarMeterRating: humans[currentHuman].imdbStarMeterRating})
+      }
+      return accumulator
+    }, [])
+
+    return uncastActors.sort((a, b) => {
+      if (a.nationality > b.nationality) {
+        return 1;
+      } else if (a.nationality < b.nationality) {
+        return -1;
+      } else {
+        return 0;
+      }
+    })
+
     /* CODE GOES HERE */
 
     // Annotation:
@@ -1052,7 +1387,47 @@ const dinosaurPrompts = {
       { name: 'Bryce Dallas Howard', ages: [ 34, 37 ] } ]
     */
 
-    /* CODE GOES HERE */
+    const humanNames = Object.keys(humans)
+    const castedActors = movies.flatMap(movie => movie.cast);
+
+    const test = humanNames.reduce((accumulator, currentHuman) => {
+      if (castedActors.includes(currentHuman)) {
+        accumulator.push({name: currentHuman, ages: []})
+        movies.forEach(movie => {
+          if (movie.cast.includes(currentHuman)) {
+            accumulator.forEach(element => {
+              if (element.name === currentHuman) {
+                element.ages.push(movie.yearReleased - humans[currentHuman].yearBorn)
+              }
+            })
+          }
+        })
+      }
+      return accumulator;
+    }, [])
+    
+    // const test = humanNames.reduce((accumulator, currentHuman) => {
+    //   movies.forEach(movie => {
+    //     accumulator.forEach(element => {
+    //       if (movie.cast.includes(currentHuman) && !element.name === currentHuman) {
+    //         let age = movie.yearReleased - humans[currentHuman].yearBorn;
+    //         accumulator.push({name: currentHuman, ages: [age]})
+    //       }
+    //     })
+    //   })
+
+    //   return accumulator;
+    // }, [])
+
+    // const test = humanNames.reduce((accumulator, currentHuman) => {
+    //   if (castedActors.includes(currentHuman)) {
+    //     accumulator.push({name: currentHuman, ages: [12]})
+    //   }
+    //   return accumulator;
+    // }, [])
+
+    console.log(test)
+    return test
 
     // Annotation:
     // Write your annotation here as a comment

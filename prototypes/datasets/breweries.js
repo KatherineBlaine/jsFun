@@ -68,7 +68,7 @@ const breweries = [
       { name: 'Madagascar Dream', type: 'Cream Ale', abv: 6.9, ibu: 18 },
       { name: 'Oktoberfest', type: 'Oktoberfest', abv: 5.5, ibu: 29 },
     ]
-  }
+  },
 ];
 
 module.exports = {
